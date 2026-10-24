@@ -31,17 +31,10 @@ Two tables, linked by a foreign key:
 ## How to Run
 
 1. Clone the repository
-2. Create a `.env` file from the template and fill in your own values:
-
-cp .env.example .env
-   (On Windows PowerShell: `Copy-Item .env.example .env`)
-3. Start PostgreSQL:
-
-docker compose up -d
-4. Install the Python packages:
-
-pip install requests psycopg2-binary python-dotenv
-5. Run the pipeline:
+2. Create a `.env` file from the template and fill in your own values: `cp .env.example .env` (Windows PowerShell: `Copy-Item .env.example .env`)
+3. Start PostgreSQL: `docker compose up -d`
+4. Install the Python packages: `pip install requests psycopg2-binary python-dotenv`
+5. Run the pipeline: `python aapl_etl.py`
 
 python aapl_etl.py
 
