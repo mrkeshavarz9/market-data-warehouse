@@ -36,8 +36,6 @@ Two tables, linked by a foreign key:
 4. Install the Python packages: `pip install requests psycopg2-binary python-dotenv`
 5. Run the pipeline: `python aapl_etl.py`
 
-python aapl_etl.py
-
 ## Next Steps
 
 - Add a separate pipeline for Bitcoin (CoinGecko API)
