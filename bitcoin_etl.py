@@ -1,15 +1,9 @@
 # 1. Import libraries
-import os
-from dotenv import load_dotenv
 import requests
-import psycopg2
 import pandas as pd
+from db import get_connection
 
 # 2. Load .env and read password
-load_dotenv()
-password = os.environ.get("POSTGRES_PASSWORD")
-if password is None:
-    raise ValueError("POSTGRES_PASSWORD in .env file is missing!!!")
 
 # 3. Extract: request daily bitcoin prices from CoinGecko
 url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
@@ -30,13 +24,7 @@ total_vilumes = btc_data["total_volumes"]
 print(f"{len(prices)} days received for bitcoin")
 
 # 4. Connect to PostgreSQL and create a cursor
-conn = psycopg2.connect(
-    host="localhost",
-    port="5432",
-    dbname="market_data",
-    user="market_admin",
-    password=password
-)
+conn = get_connection()
 cur = conn.cursor()
 print("connected successfully!")
 
