@@ -95,7 +95,7 @@ for p, v in zip(prices, total_volumes):
     rows.append(new_record)
 print(f"{len(rows)} rows are ready!")
 
-# 8. Load: insert rows with executemany and ON CONFLICT DO NOTHING
+# 8. Load: insert rows with executemany and ON CONFLICT DO UPDATE SET
 cur.executemany("""
 INSERT INTO daily_prices (asset_id, date, close_price, volume)
 VALUES

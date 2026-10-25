@@ -86,18 +86,20 @@ for date, values in daily.items():
     rows.append(record)
 print(f"{len(rows)} rows are ready!")
 
-# 8. Load: insert rows with executemany and ON CONFLICT DO NOTHING
+# 8. Load: insert rows with executemany and ON CONFLICT DO UPDATE SET
 cur.executemany("""
 INSERT INTO daily_prices (asset_id, date, close_price, volume)
 VALUES
     (%s, %s, %s, %s)
-ON CONFLICT (asset_id, date) DO NOTHING
+ON CONFLICT (asset_id, date) DO UPDATE SET
+    close_price = EXCLUDED.close_price,
+    volume = EXCLUDED.volume
 """, rows)
 
 cur.execute("SELECT COUNT(*) FROM daily_prices WHERE asset_id = %s", (asset_id,))
 count_after = cur.fetchone()[0]
 print(f"number of rows after adding is: {count_after}")
-print(f"So, diffrence between before adding and after adding is: {count_after - count_before}")
+print(f"So, difference between before adding and after adding is: {count_after - count_before}")
 
 # 9. Commit the transaction
 conn.commit()

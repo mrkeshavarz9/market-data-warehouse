@@ -31,7 +31,7 @@ Both scripts follow the same steps:
 
 Differences between the two pipelines:
 
-- `aapl_etl.py` (Alpha Vantage): needs an API key. Only finished trading days are returned, so rows are inserted with `ON CONFLICT DO NOTHING`.
+- `aapl_etl.py` (Alpha Vantage): needs an API key. Only finished trading days are returned, but rows are still inserted with an upsert (`ON CONFLICT DO UPDATE`), so any later corrections from the API are applied instead of ignored.
 - `bitcoin_etl.py` (CoinGecko): no API key needed. Prices come as two separate lists (prices and volumes) with Unix timestamps in milliseconds, which are paired with `zip` and converted to dates. Because the crypto market never closes, the current day is always incomplete, so rows are inserted with an upsert (`ON CONFLICT DO UPDATE`): the next run replaces the partial price with the final one.
 
 ## How to Run
