@@ -2,15 +2,12 @@
 import os
 from dotenv import load_dotenv
 import requests
-import psycopg2
 import pandas as pd
+from db import get_connection
 
 # 2. Load .env and read API key and password
 load_dotenv()
-password = os.environ.get("POSTGRES_PASSWORD")
 api_key = os.environ.get("ALPHA_VANTAGE_API_KEY")
-if password is None:
-    raise ValueError("POSTGRES_PASSWORD in .env file is missing!!!")
 if api_key is None:
     raise ValueError("ALPHA_VANTAGE_API_KEY in .env file is missing!!!")
 
@@ -28,13 +25,7 @@ daily = data["Time Series (Daily)"]
 print(f"{len(daily)} days received for AAPL")
 
 # 4. Connect to PostgreSQL and create a cursor
-conn = psycopg2.connect(
-    host="localhost",
-    port="5432",
-    dbname="market_data",
-    user="market_admin",
-    password=password
-)
+conn = get_connection()
 cur = conn.cursor()
 print("connected successfully!")
 
