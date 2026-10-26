@@ -52,6 +52,9 @@ def get_asset_id(cur, symbol, name, asset_type):
         raise ValueError(f"we didnt find {symbol} in assets")
     return row[0]
 
+def count_rows(cur, asset_id):
+    cur.execute("SELECT COUNT(*) FROM daily_prices WHERE asset_id = %s", (asset_id,))
+    return cur.fetchone()[0]
     
 
 

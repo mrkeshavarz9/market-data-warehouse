@@ -1,7 +1,7 @@
 # 1. Import libraries
 import requests
 import pandas as pd
-from db import get_connection, create_tables, get_asset_id
+from db import get_connection, create_tables, get_asset_id, count_rows
 
 # 2. Load .env and read password
 
@@ -40,8 +40,7 @@ if row is None:
     raise ValueError("we didnt find bitcoin in assets")
 asset_id = row[0]
 
-cur.execute("SELECT COUNT(*) FROM daily_prices WHERE asset_id = %s", (asset_id,))
-count_before = cur.fetchone()[0]
+count_before = count_rows(cur, asset_id)
 print(f"number of rows before adding is: {count_before}")
 
 print(f"asset_id for bitcoin: {asset_id}")
@@ -70,8 +69,7 @@ ON CONFLICT (asset_id, date) DO UPDATE SET
     volume = EXCLUDED.volume
 """,rows)
 
-cur.execute("SELECT COUNT(*) FROM daily_prices WHERE asset_id = %s", (asset_id,))
-count_after = cur.fetchone()[0]
+count_after = count_rows(cur, asset_id)
 print(f"number of rows after adding is: {count_after}")
 print(f"So, difference between before adding and after adding is: {count_after - count_before}")
 

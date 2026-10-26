@@ -2,7 +2,7 @@
 import os
 from dotenv import load_dotenv
 import requests
-from db import get_connection, create_tables, get_asset_id
+from db import get_connection, create_tables, get_asset_id, count_rows
 
 # 2. Load .env and read API key and password
 load_dotenv()
@@ -34,8 +34,7 @@ create_tables(cur)
 # 6. Get asset_id for AAPL from the assets table
 asset_id = get_asset_id(cur, "AAPL", "Apple Inc.", "stock")
 
-cur.execute("SELECT COUNT(*) FROM daily_prices WHERE asset_id = %s", (asset_id,))
-count_before = cur.fetchone()[0]
+count_before = count_rows(cur, asset_id)
 print(f"number of rows before adding is: {count_before}")
 
 print(f"asset_id for AAPL: {asset_id}")
@@ -57,8 +56,7 @@ ON CONFLICT (asset_id, date) DO UPDATE SET
     volume = EXCLUDED.volume
 """, rows)
 
-cur.execute("SELECT COUNT(*) FROM daily_prices WHERE asset_id = %s", (asset_id,))
-count_after = cur.fetchone()[0]
+count_after = count_rows(cur, asset_id)
 print(f"number of rows after adding is: {count_after}")
 print(f"So, difference between before adding and after adding is: {count_after - count_before}")
 
