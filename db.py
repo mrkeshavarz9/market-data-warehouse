@@ -37,7 +37,21 @@ def create_tables(cur):
     UNIQUE (asset_id, date)
     )
     """)
-    
 
+def get_asset_id(cur, symbol, name, asset_type):
+    cur.execute("""
+    INSERT INTO assets (symbol, name, asset_type)
+    VALUES
+        (%s, %s, %s)
+    ON CONFLICT (symbol) DO NOTHING
+    """, (symbol, name, asset_type))
+
+    cur.execute (" SELECT asset_id FROM assets WHERE symbol = %s", (symbol,))
+    row = cur.fetchone()
+    if row is None:
+        raise ValueError(f"we didnt find {symbol} in assets")
+    return row[0]
+
+    
 
 

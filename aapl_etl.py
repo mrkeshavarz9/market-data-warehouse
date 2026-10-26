@@ -2,7 +2,7 @@
 import os
 from dotenv import load_dotenv
 import requests
-from db import get_connection, create_tables
+from db import get_connection, create_tables, get_asset_id
 
 # 2. Load .env and read API key and password
 load_dotenv()
@@ -32,18 +32,7 @@ print("connected successfully!")
 create_tables(cur)
 
 # 6. Get asset_id for AAPL from the assets table
-cur.execute("""
-INSERT INTO assets (symbol, name, asset_type)
-VALUES
-    (%s, %s, %s)
-ON CONFLICT (symbol) DO NOTHING
-""", ('AAPL', 'Apple Inc.', 'stock'))
-
-cur.execute (" SELECT asset_id FROM assets WHERE symbol = %s", ("AAPL",))
-row = cur.fetchone()
-if row is None:
-    raise ValueError("we didnt find AAPL in assets")
-asset_id = row[0]
+asset_id = get_asset_id(cur, "AAPL", "Apple Inc.", "stock")
 
 cur.execute("SELECT COUNT(*) FROM daily_prices WHERE asset_id = %s", (asset_id,))
 count_before = cur.fetchone()[0]

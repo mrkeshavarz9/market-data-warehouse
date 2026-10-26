@@ -1,7 +1,7 @@
 # 1. Import libraries
 import requests
 import pandas as pd
-from db import get_connection, create_tables
+from db import get_connection, create_tables, get_asset_id
 
 # 2. Load .env and read password
 
@@ -32,12 +32,7 @@ print("connected successfully!")
 create_tables(cur)
 
 # 6. Get asset_id for bitcoin from the assets table
-cur.execute("""
-INSERT INTO assets (symbol, name, asset_type)
-VALUES
-    (%s, %s, %s)
-ON CONFLICT (symbol) DO NOTHING
-""", ('bitcoin', 'bitcoin', 'crypto'))
+asset_id = get_asset_id(cur, "bitcoin", "bitcoin", "crypto")
 
 cur.execute (" SELECT asset_id FROM assets WHERE symbol = %s", ("bitcoin",))
 row = cur.fetchone()
