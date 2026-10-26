@@ -2,8 +2,7 @@
 import os
 from dotenv import load_dotenv
 import requests
-import pandas as pd
-from db import get_connection
+from db import get_connection, create_tables
 
 # 2. Load .env and read API key and password
 load_dotenv()
@@ -30,25 +29,7 @@ cur = conn.cursor()
 print("connected successfully!")
 
 # 5. Create tables if they do not exist
-cur.execute ("""
-CREATE TABLE IF NOT EXISTS assets(
-asset_id SERIAL PRIMARY KEY,
-symbol VARCHAR(20) NOT NULL UNIQUE,
-name VARCHAR(100),
-asset_type VARCHAR(20) NOT NULL
-)
-""")
-
-cur.execute ("""
-CREATE TABLE IF NOT EXISTS daily_prices(
-price_id SERIAL PRIMARY KEY,
-asset_id INTEGER REFERENCES assets(asset_id),
-date DATE NOT NULL,
-close_price NUMERIC(12, 4),
-volume BIGINT,
-UNIQUE (asset_id, date)
-)
-""")
+create_tables(cur)
 
 # 6. Get asset_id for AAPL from the assets table
 cur.execute("""
