@@ -18,6 +18,8 @@ Two tables, linked by a foreign key:
 
 ## How the Pipelines Work
 
+Shared database code (connection, table creation, asset lookup and row counting) lives in `db.py`, and both pipeline scripts import their functions from it.
+
 Both scripts follow the same steps:
 
 1. Load secrets from `.env` and stop early with a clear error if any are missing
@@ -44,7 +46,6 @@ Differences between the two pipelines:
 
 ## Next Steps
 
-- Refactor the scripts into functions and share common code between them
 - Add error handling with try/except
 - Schedule the pipelines with Apache Airflow
 - Add tests with pytest
