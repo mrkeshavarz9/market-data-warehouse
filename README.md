@@ -42,8 +42,9 @@ Differences between the two pipelines:
 1. Clone the repository
 2. Create a `.env` file from the template and fill in your own values: `cp .env.example .env` (Windows PowerShell: `Copy-Item .env.example .env`)
 3. Start PostgreSQL: `docker compose up -d`
-4. Install the Python packages: `pip install requests psycopg2-binary python-dotenv pandas`
+4. Install the Python packages: `pip install requests psycopg2-binary python-dotenv pandas sqlalchemy`
 5. Run the pipelines: `python aapl_etl.py` and `python bitcoin_etl.py`
+6. See how many days are stored per asset: `python analysis.py`
 
 ## Next Steps
 
