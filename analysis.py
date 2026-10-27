@@ -35,3 +35,28 @@ ORDER BY symbol, price_rank
 
 top3_result = pd.read_sql(top3_query, engine)
 print(top3_result)
+
+query = ("""
+SELECT x,
+    RANK()       OVER (ORDER BY x DESC) AS rnk,
+    DENSE_RANK() OVER (ORDER BY x DESC) AS dense_rnk,
+    ROW_NUMBER() OVER (ORDER BY x DESC) AS row_num
+FROM (VALUES (10), (10), (8)) AS t(x)
+""")
+
+result = pd.read_sql(query, engine)
+print(result)
+
+ma7_query = ("""
+SELECT 
+    symbol,
+    date,
+    close_price,
+    ROUND(AVG(close_price) OVER (PARTITION BY symbol ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 2) AS ma_7
+FROM assets
+JOIN daily_prices ON assets.asset_id = daily_prices.asset_id
+ORDER BY symbol, date DESC
+""")
+
+ma7_result = pd.read_sql(ma7_query, engine)
+print(ma7_result)
