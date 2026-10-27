@@ -29,41 +29,47 @@ cur = conn.cursor()
 print("connected successfully!")
 
 # 5. Create tables if they do not exist
-create_tables(cur)
+try:
+    create_tables(cur)
 
 # 6. Get asset_id for AAPL from the assets table
-asset_id = get_asset_id(cur, "AAPL", "Apple Inc.", "stock")
+    asset_id = get_asset_id(cur, "AAPL", "Apple Inc.", "stock")
 
-count_before = count_rows(cur, asset_id)
-print(f"number of rows before adding is: {count_before}")
-
-print(f"asset_id for AAPL: {asset_id}")
+    count_before = count_rows(cur, asset_id)
+    print(f"number of rows before adding is: {count_before}")
+    print(f"asset_id for AAPL: {asset_id}")
 
 # 7. Transform: build a list of tuples (asset_id, date, close_price, volume)
-rows = []
-for date, values in daily.items():
-    record = (asset_id, date, values["4. close"], values["5. volume"])
-    rows.append(record)
-print(f"{len(rows)} rows are ready!")
+    rows = []
+    for date, values in daily.items():
+        record = (asset_id, date, values["4. close"], values["5. volume"])
+        rows.append(record)
+    print(f"{len(rows)} rows are ready!")
 
 # 8. Load: insert rows with executemany and ON CONFLICT DO UPDATE SET
-cur.executemany("""
-INSERT INTO daily_prices (asset_id, date, close_price, volume)
-VALUES
-    (%s, %s, %s, %s)
-ON CONFLICT (asset_id, date) DO UPDATE SET
-    close_price = EXCLUDED.close_price,
-    volume = EXCLUDED.volume
-""", rows)
+    cur.executemany("""
+    INSERT INTO daily_prices (asset_id, date, close_price, volume)
+    VALUES
+        (%s, %s, %s, %s)
+    ON CONFLICT (asset_id, date) DO UPDATE SET
+        close_price = EXCLUDED.close_price,
+        volume = EXCLUDED.volume
+    """, rows)
 
-count_after = count_rows(cur, asset_id)
-print(f"number of rows after adding is: {count_after}")
-print(f"So, difference between before adding and after adding is: {count_after - count_before}")
+    count_after = count_rows(cur, asset_id)
+    print(f"number of rows after adding is: {count_after}")
+    print(f"So, difference between before adding and after adding is: {count_after - count_before}")
 
 # 9. Commit the transaction
-conn.commit()
+    conn.commit()
+    print("AAPL pipeline finished successfully")
+
+except Exception as e:
+    conn.rollback()
+    print(f"AAPL pipeline failed: {e}")
+    raise
 
 # 10. Close the cursor and the connection
-cur.close()
-conn.close()
-print("All Done")
+finally:
+    cur.close()
+    conn.close()

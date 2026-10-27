@@ -30,6 +30,7 @@ Both scripts follow the same steps:
 6. **Transform:** build one row per day: `(asset_id, date, close_price, volume)`
 7. **Load:** insert the rows into `daily_prices`
 8. Report how many new rows were added, commit, and close the connection
+If any step fails, the transaction is rolled back, the connection is closed, and the error is re-raised so the failure is visible.
 
 Differences between the two pipelines:
 
@@ -46,6 +47,5 @@ Differences between the two pipelines:
 
 ## Next Steps
 
-- Add error handling with try/except
 - Schedule the pipelines with Apache Airflow
 - Add tests with pytest
