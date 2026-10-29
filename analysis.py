@@ -114,3 +114,18 @@ ORDER BY date
 result = pd.read_sql(avg_query, engine)
 print(result)
 print(len(result))
+
+month_query = ("""
+SELECT
+    symbol,
+    DATE_TRUNC('month', date)::date AS month_date,
+    ROUND(AVG(close_price), 2) AS average,
+    COUNT(*) AS days
+FROM assets
+JOIN daily_prices ON assets.asset_id = daily_prices.asset_id
+GROUP BY symbol, month_date
+ORDER BY symbol, month_date
+""")
+
+month_result = pd.read_sql(month_query, engine)
+print(month_result)
