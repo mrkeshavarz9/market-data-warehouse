@@ -93,3 +93,24 @@ ORDER BY symbol
 
 dir_result = pd.read_sql(direction_summary_query, engine)
 print(dir_result)
+
+
+avg_query = ("""
+SELECT
+    date,
+    close_price
+FROM assets
+JOIN daily_prices ON assets.asset_id = daily_prices.asset_id
+WHERE symbol = 'AAPL'
+    AND close_price > (
+        SELECT AVG(close_price)
+        FROM assets
+        JOIN daily_prices ON assets.asset_id = daily_prices.asset_id
+        WHERE symbol = 'AAPL'
+    )
+ORDER BY date
+""")
+
+result = pd.read_sql(avg_query, engine)
+print(result)
+print(len(result))
