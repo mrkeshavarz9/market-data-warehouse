@@ -60,3 +60,36 @@ ORDER BY symbol, date DESC
 
 ma7_result = pd.read_sql(ma7_query, engine)
 print(ma7_result)
+
+
+direction_summary_query = ("""
+WITH prices AS (
+SELECT
+    symbol,
+    date,
+    close_price,
+    LAG(close_price) OVER (PARTITION BY symbol ORDER BY date) AS prev_close
+FROM assets
+JOIN daily_prices ON assets.asset_id = daily_prices.asset_id
+),
+labeled AS (
+SELECT symbol, date, close_price, prev_close,
+    CASE
+        WHEN prev_close IS NULL THEN 'first_day'
+        WHEN close_price > prev_close THEN 'up'
+        WHEN close_price = prev_close THEN 'same'
+        ELSE 'down'
+    END AS direction
+FROM prices
+)
+SELECT symbol,
+    COUNT(*) FILTER (WHERE direction = 'up') AS up_days,
+    COUNT(*) FILTER (WHERE direction = 'down') AS down_days,
+    COUNT(*) FILTER (WHERE direction = 'same') AS same_days
+FROM labeled
+GROUP BY symbol
+ORDER BY symbol
+""")
+
+dir_result = pd.read_sql(direction_summary_query, engine)
+print(dir_result)
