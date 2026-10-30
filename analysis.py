@@ -129,3 +129,17 @@ ORDER BY symbol, month_date
 
 month_result = pd.read_sql(month_query, engine)
 print(month_result)
+
+sum_query = ("""
+SELECT
+    symbol,
+    date,
+    volume,
+    SUM(volume) OVER (PARTITION BY symbol ORDER BY date) AS cumulative_volume
+FROM assets
+JOIN daily_prices ON assets.asset_id = daily_prices.asset_id
+ORDER BY symbol, date DESC
+""")
+
+sum_result = pd.read_sql(sum_query, engine)
+print(sum_result.head(3))
